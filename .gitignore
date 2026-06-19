@@ -1,0 +1,50 @@
+# Android
+*.apk
+*.ap_
+*.dex
+*.class
+local.properties
+.gradle/
+build/
+.navigation/
+captures/
+.cxx/
+
+# Android Studio
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# Keystore（绝对不要提交）
+*.keystore
+*.jks
+keystore.b64
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# .NET (Windows 伴侣)
+companion/windows/bin/
+companion/windows/obj/
+companion/windows/*.user
+companion/windows/*.suo
+
+# Swift (macOS 伴侣)
+companion/macos/.build/
+companion/macos/.swiftpm/
+Packages/
+Package.resolved
+
+# Gradle wrapper（部分团队提交 wrapper，这里先忽略让 CI 自己下）
+# android-app/gradlew
+# android-app/gradlew.bat
+# android-app/gradle/wrapper/gradle-wrapper.jar
+
+# 临时文件
+*.log
+*.tmp

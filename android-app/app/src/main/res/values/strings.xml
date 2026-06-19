@@ -1,0 +1,42 @@
+<resources>
+    <string name="app_name">PPT 翻页笔</string>
+
+    <!-- 连接模式 -->
+    <string name="mode_bluetooth">蓝牙 · 免安装</string>
+    <string name="mode_wifi">WiFi · 伴侣程序</string>
+
+    <!-- 状态 -->
+    <string name="status_unsupported">本机不支持蓝牙 HID，请改用 WiFi 模式</string>
+    <string name="status_bluetooth_off">请先开启蓝牙</string>
+    <string name="status_no_permission">缺少蓝牙权限，请在设置中授权</string>
+    <string name="status_ready_bluetooth">就绪：在电脑蓝牙里搜索并配对 "PPT Clicker"</string>
+    <string name="status_connected_bluetooth">已连接电脑</string>
+    <string name="status_disconnected_bluetooth">已断开</string>
+    <string name="status_scanning">正在搜索电脑伴侣程序…</string>
+    <string name="status_connecting">正在连接 %1$s…</string>
+    <string name="status_handshaking">正在握手…</string>
+    <string name="status_connected_wifi">已连接 %1$s</string>
+    <string name="status_error">错误：%1$s</string>
+
+    <!-- 按钮 -->
+    <string name="btn_prev">上一页</string>
+    <string name="btn_next">下一页</string>
+    <string name="btn_fullscreen">开始演示 (F5)</string>
+    <string name="btn_exit">退出全屏 (Esc)</string>
+    <string name="btn_black">黑屏 (B)</string>
+    <string name="btn_white">白/黑屏 (.)</string>
+    <string name="btn_home">回首页</string>
+    <string name="btn_end">末页</string>
+
+    <!-- 菜单 -->
+    <string name="menu_switch_mode">切换连接模式</string>
+    <string name="menu_manual_ip">手动输入 IP</string>
+    <string name="menu_pair_code">配对码</string>
+    <string name="menu_about">关于</string>
+
+    <!-- 弹窗 -->
+    <string name="dialog_ip_title">手动输入电脑 IP</string>
+    <string name="dialog_pair_title">输入伴侣程序显示的配对码（可留空）</string>
+    <string name="ok">确定</string>
+    <string name="cancel">取消</string>
+</resources>

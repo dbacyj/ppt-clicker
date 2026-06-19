@@ -1,0 +1,80 @@
+name: Build & Release Android APK
+
+# 触发：推送 v* 开头的 tag（如 v0.1.0）时编译签名 APK 并发布到 GitHub Release
+# 这样本地完全不用装 Android Studio / JDK，一切在云端完成。
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write   # 发布 Release 需要
+
+jobs:
+  build:
+    name: Build signed release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Restore release keystore
+        # 从 Secrets 还原 keystore；配置见 .github/scripts/gen-keystore.md
+        # 若未配置签名 Secret，构建会自动回退到 debug 签名（仍可发布，只是证书不同）
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          cd android-app
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > release.keystore
+            echo "KEYSTORE_FILE=$PWD/release.keystore" >> $GITHUB_ENV
+            echo "SIGN_CONFIGURED=true" >> $GITHUB_ENV
+            echo "已还原 release keystore"
+          else
+            echo "未配置签名 Secret，将回退到 debug 签名"
+            echo "SIGN_CONFIGURED=false" >> $GITHUB_ENV
+          fi
+
+      - name: Build release APK
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          cd android-app
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
+
+      - name: Locate APK
+        id: apk
+        run: |
+          APK=$(find android-app/app/build/outputs/apk/release -name "*.apk" | head -1)
+          echo "path=$APK" >> $GITHUB_OUTPUT
+          echo "找到产物: $APK"
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ppt-clicker-apk
+          path: ${{ steps.apk.outputs.path }}
+
+      - name: Create GitHub Release with APK
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          generate_release_notes: true
+          files: ${{ steps.apk.outputs.path }}

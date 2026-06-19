@@ -1,0 +1,12 @@
+<resources>
+    <!-- 底部辅助按钮统一样式 -->
+    <style name="AuxButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_columnWeight">1</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">52dp</item>
+        <item name="android:textSize">12sp</item>
+        <item name="backgroundTint">@color/bg_card</item>
+        <item name="android:textColor">@color/text_primary</item>
+    </style>
+</resources>
