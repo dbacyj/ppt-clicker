@@ -143,6 +143,12 @@ swift build -c release
 - [ ] iOS 端（需 Apple 开发者账号 + 电脑伴侣模式）
 - [ ] 应用商店上架
 
+## 关于本项目
+
+项目初始版本由 [ZCode](https://zcode.dev/) 使用 GLM-5.2 / GLM-5-Turbo 免费额度辅助生成，属于 AI + 人类协作的开源实践。后续版本将在此基础上持续迭代维护。
+
+> 💡 **遇到问题？** 直接 [提交 Issue](https://github.com/dbacyj/ppt-clicker/issues) 反馈，或 [Fork 后提交 PR](https://github.com/dbacyj/ppt-clicker/fork) 直接修改——开源项目欢迎任何形式的参与。
+
 ## 许可证
 
 [MIT](LICENSE) —— 自由使用、修改、分发。
