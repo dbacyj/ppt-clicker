@@ -1,11 +1,12 @@
-# 生成 APK 签名密钥 & 配置 GitHub Secrets
+# Generating the APK signing key & configuring GitHub Secrets
 
-APK 必须签名才能在手机上安装。本项目的 GitHub Actions 工作流会自动签名，
-你只需做一次：生成 keystore → 编码 → 存到 GitHub Secrets。
+An APK must be signed to be installable. The GitHub Actions workflow signs it automatically — you only need to do this once: generate a keystore → encode it → store it in GitHub Secrets.
 
-> keystore 是私密的，**绝对不要**提交到仓库（已在 .gitignore 中排除）。
+> The keystore is secret — **never** commit it (it is excluded by `.gitignore`).
 
-## 第 1 步：生成 keystore（本地任一装了 JDK 的机器，或用在线工具）
+## Step 1: Generate a keystore
+
+Run this on any machine with a JDK:
 
 ```bash
 keytool -genkey -v \
@@ -14,47 +15,47 @@ keytool -genkey -v \
   -keyalg RSA -keysize 2048 -validity 10000
 ```
 
-按提示填写密码和身份信息（密码记好，后面要用）。完成后得到 `ppt-clicker.keystore` 文件。
+Follow the prompts for passwords and identity. This produces `ppt-clicker.keystore`.
 
-> 没装 JDK？可以用任意一台 Mac（自带）或用 GitHub Codespaces。
-> 或者临时用一个在线 keytool 服务（注意安全性，仅个人项目用）。
+> No JDK installed? Any Mac has one built in, or use GitHub Codespaces.
 
-## 第 2 步：把 keystore 编码成 base64
+## Step 2: Encode the keystore as base64
 
 ```bash
 base64 -i ppt-clicker.keystore -o keystore.b64
-# 输出一长串 base64 文本
-cat keystore.b64
+cat keystore.b64   # a long base64 string
 ```
 
-## 第 3 步：在 GitHub 仓库添加 4 个 Secrets
+## Step 3: Add 4 secrets to the GitHub repo
 
-进入仓库 → **Settings → Secrets and variables → Actions → New repository secret**，添加：
+Repo → **Settings → Secrets and variables → Actions → New repository secret**:
 
-| Secret 名 | 值 |
-|-----------|----|
-| `KEYSTORE_BASE64` | 第 2 步 `keystore.b64` 的全部内容（一长串 base64） |
-| `KEYSTORE_PASSWORD` | 第 1 步设置的 keystore 密码 |
-| `KEY_ALIAS` | `pptclicker`（第 1 步 `-alias` 的值） |
-| `KEY_PASSWORD` | 第 1 步设置的 key 密码（通常与 keystore 密码相同） |
+| Secret name | Value |
+|-------------|-------|
+| `KEYSTORE_BASE64` | The full base64 content from step 2 |
+| `KEYSTORE_PASSWORD` | The keystore password from step 1 |
+| `KEY_ALIAS` | `pptclicker` (the `-alias` value from step 1) |
+| `KEY_PASSWORD` | The key password from step 1 (usually the same as the keystore password) |
 
-## 第 4 步：发布
+## Step 4: Release
 
 ```bash
 git tag v0.1.0
 git push origin v0.1.0
 ```
 
-推送 tag 后，GitHub Actions 自动：
-1. 从 `KEYSTORE_BASE64` 还原 keystore
-2. 编译签名 APK
-3. 发布到 GitHub Release（带自动生成的 changelog）
+On push, GitHub Actions will:
 
-在仓库的 **Actions** 标签页能看到编译进度，完成后 **Releases** 页面就有可下载的 APK。
+1. Restore the keystore from `KEYSTORE_BASE64`
+2. Build a signed APK
+3. Publish it to GitHub Releases (with an auto-generated changelog)
+
+Track progress under the **Actions** tab; once complete, the APK appears on the **Releases** page.
 
 ---
 
-## 安全说明
-- keystore 文件请**本地备份**（如存到密码管理器、加密 U 盘）。丢失后无法给新版本用同一签名升级。
-- GitHub Secrets 是加密存储的，Actions 运行时才解密注入，不会出现在日志里。
-- keystore 已被 `.gitignore` 排除，不会被提交。
+## Security notes
+
+- **Back up the keystore locally** (password manager, encrypted USB). If you lose it, new versions cannot be signed with the same key, so users can't upgrade.
+- GitHub Secrets are encrypted at rest and only decrypted at action runtime; they never appear in logs.
+- The keystore is excluded by `.gitignore` and will not be committed.

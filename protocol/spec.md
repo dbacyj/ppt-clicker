@@ -1,21 +1,18 @@
-# PPT Clicker — WiFi 通信协议规范 v1
+# PPT Clicker — WiFi Protocol Specification v1
 
-本协议定义安卓 App（客户端）与电脑伴侣程序（服务端）之间的通信约定。
-两端都按此实现，协议无关具体编程语言。
+This document defines the communication contract between the Android app (client) and the desktop companion program (server). Both sides implement against it; it is language-agnostic.
 
-## 1. 传输层
+## 1. Transport
 
-- **协议**：WebSocket（RFC 6455），基于 TCP
-- **端口**：`48721`（默认；伴侣程序可配置）
-- **路径**：`/`（根路径）
-- **URL 示例**：`ws://192.168.1.20:48721/`
-- **加密**：MVP 不启用 TLS（局域网内，自签证书分发成本高）。P2 版本可引入配对码而非加密。
+- **Protocol**: WebSocket (RFC 6455) over TCP
+- **Port**: `48721` (default; companion is configurable)
+- **Path**: `/` (root)
+- **Example URL**: `ws://192.168.1.20:48721/`
+- **Encryption**: No TLS in the MVP (local network; self-signed certs are painful to distribute). Security is provided by "same LAN + pairing code" (see §5). TLS / `wss` is a future enhancement.
 
-> 注意：不使用 `wss://`，因为本地伴侣程序没有可信证书。安全性由"同局域网 + 配对码"保证（配对码见 §5）。
+## 2. Message format
 
-## 2. 消息格式
-
-所有消息均为 **JSON 文本帧**（UTF-8），结构统一：
+All messages are **JSON text frames** (UTF-8) with a uniform envelope:
 
 ```json
 {
@@ -26,39 +23,39 @@
 }
 ```
 
-| 字段 | 类型 | 必填 | 说明 |
-|------|------|------|------|
-| `v` | int | 是 | 协议版本号，当前为 `1` |
-| `type` | string | 是 | 消息类型，见 §3 |
-| `id` | string | 否 | 关联 ID，用于请求-响应配对 |
-| `data` | object | 视类型 | 消息体 |
+| Field | Type | Required | Description |
+|------|------|----------|-------------|
+| `v` | int | yes | Protocol version, currently `1` |
+| `type` | string | yes | Message type, see §3 |
+| `id` | string | no | Correlation id for request/response pairing |
+| `data` | object | depends | Message body |
 
-收方遇到 `v` 不兼容时应忽略消息并发送 `error`（`code=unsupported_version`）。
+A receiver that encounters an unsupported `v` should ignore the message and emit `error` (`code=unsupported_version`).
 
-## 3. 消息类型总表
+## 3. Message types
 
-| 方向 | type | 说明 |
-|------|------|------|
-| C→S | `hello` | 连接握手，携带配对码与能力声明 |
-| S→C | `hello_ack` | 握手响应，携带伴侣信息 |
-| S→C | `hello_nack` | 握手拒绝（配对码错误等） |
-| C→S | `key` | 发送一个按键事件（核心翻页指令） |
-| C→S | `key_combo` | 发送组合键 |
-| S→C | `key_result` | 按键执行结果 |
-| C→S | `ping` | 心跳 |
-| S→C | `pong` | 心跳响应 |
-| S→C | `state` | PPT 状态推送（当前页/总页等，P1 用） |
-| 双向 | `error` | 错误通知 |
+| Direction | type | Description |
+|-----------|------|-------------|
+| C→S | `hello` | Connection handshake with pairing code and capabilities |
+| S→C | `hello_ack` | Handshake accepted with server info |
+| S→C | `hello_nack` | Handshake rejected (wrong pairing code, etc.) |
+| C→S | `key` | Send a single key event (the core command) |
+| C→S | `key_combo` | Send a key combination |
+| S→C | `key_result` | Result of a key event |
+| C→S | `ping` | Heartbeat |
+| S→C | `pong` | Heartbeat reply |
+| S→C | `state` | PPT state push (current slide, total slides — P1) |
+| both | `error` | Error notification |
 
-- C = Client（手机），S = Server（电脑伴侣）
-- MVP 必须实现：`hello`/`hello_ack`/`hello_nack`、`key`/`key_result`、`ping`/`pong`、`error`
-- `state`/`key_combo` 为 P1，但本规范先行定义
+- C = Client (phone), S = Server (companion)
+- **MVP-required**: `hello`/`hello_ack`/`hello_nack`, `key`/`key_result`, `ping`/`pong`, `error`
+- `state`/`key_combo` are P1 but specified here for forward compatibility
 
-## 4. 详细报文
+## 4. Detailed messages
 
-### 4.1 hello（C→S）
+### 4.1 hello (C→S)
 
-连接建立后由客户端**立即**发送，未收到 `hello_ack` 前服务端不处理任何其他消息。
+Sent by the client **immediately** after the connection is established. The server ignores all other messages until `hello_ack` is sent.
 
 ```json
 {
@@ -77,15 +74,15 @@
 }
 ```
 
-| 字段 | 说明 |
-|------|------|
-| `pair_code` | 配对码（见 §5）。MVP 可允许伴侣关闭校验 |
-| `client.name` | 人类可读设备名 |
+| Field | Description |
+|------|-------------|
+| `pair_code` | Pairing code (see §5). The companion may disable verification in MVP |
+| `client.name` | Human-readable device name |
 | `client.platform` | `android` / `ios` |
-| `client.app_version` | App 版本 |
-| `caps` | 客户端支持的能力列表 |
+| `client.app_version` | App version |
+| `caps` | Capabilities the client supports |
 
-### 4.2 hello_ack（S→C）
+### 4.2 hello_ack (S→C)
 
 ```json
 {
@@ -104,7 +101,7 @@
 }
 ```
 
-### 4.3 hello_nack（S→C）
+### 4.3 hello_nack (S→C)
 
 ```json
 {
@@ -115,10 +112,10 @@
 }
 ```
 
-`reason` 取值：`pair_code_invalid` / `unsupported_version` / `rejected`。
-发完此消息后服务端可主动断开连接。
+`reason` values: `pair_code_invalid` / `unsupported_version` / `rejected`.
+After sending this, the server may close the connection.
 
-### 4.4 key（C→S）★ 核心
+### 4.4 key (C→S) — core
 
 ```json
 {
@@ -129,14 +126,14 @@
 }
 ```
 
-| 字段 | 说明 |
-|------|------|
-| `code` | 逻辑键名，见 §6 键值表 |
-| `hold_ms` | 长按持续时间（毫秒）。`0` = 瞬时点击；`>0` = 模拟按下持续指定时间后释放 |
+| Field | Description |
+|------|-------------|
+| `code` | Logical key name, see §6 |
+| `hold_ms` | Hold duration in milliseconds. `0` = instant tap; `>0` = press, hold, then release |
 
-服务端将逻辑键名映射为该平台对应的物理按键（Win: `SendInput` VK_xxx；macOS: `CGEvent` kVK_xxx）。
+The server maps the logical key name to the platform's physical key (Win: `SendInput` VK_xxx; macOS: `CGEvent` kVK_xxx).
 
-### 4.5 key_combo（C→S，P1）
+### 4.5 key_combo (C→S, P1)
 
 ```json
 {
@@ -147,9 +144,9 @@
 }
 ```
 
-按顺序按下 modifiers，再按下主键，然后逆序释放。
+Modifiers are pressed in order, then the main key, then released in reverse order.
 
-### 4.6 key_result（S→C）
+### 4.6 key_result (S→C)
 
 ```json
 {
@@ -160,20 +157,20 @@
 }
 ```
 
-`ok=false` 时附带 `error.code`。
+When `ok=false`, `error.code` is attached.
 
-### 4.7 ping / pong（心跳）
+### 4.7 ping / pong (heartbeat)
 
-客户端每 `15s` 发 `ping`，服务端立即回 `pong`。任意一方 `30s` 未收到心跳应主动断开。
+The client sends `ping` every `15s`; the server replies immediately with `pong`. Either side should disconnect if no heartbeat is received for `30s`.
 
 ```json
 { "v": 1, "type": "ping", "id": "p1", "data": { "ts": 1718800000000 } }
 { "v": 1, "type": "pong", "id": "p1", "data": { "ts": 1718800000001 } }
 ```
 
-### 4.8 state（S→C，P1）
+### 4.8 state (S→C, P1)
 
-伴侣程序解析 PPT 当前状态后推送：
+Pushed by the companion after parsing the PPT's current state:
 
 ```json
 {
@@ -183,16 +180,15 @@
     "app": "powerpoint",
     "slide_index": 5,
     "slide_count": 24,
-    "notes": "第 5 页备注内容...",
+    "notes": "Notes for slide 5...",
     "is_presenting": true
   }
 }
 ```
 
-MVP 伴侣程序**不实现** `state` 推送（不解析 PPT），`caps` 中不含 `state`。
-P1 通过 PowerPoint COM / AppleScript 获取。
+The MVP companion does **not** implement `state` (it does not parse PPTs); `caps` will not include `state`. P1 obtains it via PowerPoint COM / AppleScript.
 
-### 4.9 error（双向）
+### 4.9 error (both directions)
 
 ```json
 {
@@ -202,89 +198,88 @@ P1 通过 PowerPoint COM / AppleScript 获取。
 }
 ```
 
-错误码：`unsupported_version` / `bad_message` / `unknown_key` / `not_handshaked` / `internal`。
+Error codes: `unsupported_version` / `bad_message` / `unknown_key` / `not_handshaked` / `internal`.
 
-## 5. 配对码
+## 5. Pairing code
 
-- 伴侣程序启动时随机生成 6 位数字配对码，显示在主界面/托盘菜单。
-- 客户端在 `hello.data.pair_code` 携带，错误返回 `hello_nack`。
-- 伴侣提供"跳过配对码"开关（方便 MVP 自分发、降低使用门槛），关闭时 `pair_code` 可为空字符串。
+- The companion generates a random 6-digit code at startup and displays it in its UI / tray menu.
+- The client includes it in `hello.data.pair_code`; a mismatch returns `hello_nack`.
+- The companion offers a "skip pairing code" toggle (to ease MVP distribution); when off, `pair_code` may be an empty string.
 
-## 6. 键值表（逻辑键名）
+## 6. Key mapping (logical key names)
 
-| `code` | 含义 | PowerPoint | Keynote | Windows VK | macOS keyCode |
-|--------|------|-----------|---------|-----------|---------------|
-| `page_up` | 上一页 | 上翻页 | 上翻页 | `VK_PRIOR` (0x21) | kVK_PageUp (116) |
-| `page_down` | 下一页 | 下翻页 | 下翻页 | `VK_NEXT` (0x22) | kVK_PageDown (121) |
-| `arrow_left` | 左方向 | 上翻页(部分) | 上翻页 | `VK_LEFT` (0x25) | kVK_LeftArrow (123) |
-| `arrow_right` | 右方向 | 下翻页(部分) | 下翻页 | `VK_RIGHT` (0x27) | kVK_RightArrow (124) |
-| `space` | 空格 | 下翻页/动画 | 下翻页 | `VK_SPACE` (0x20) | kVK_Space (49) |
-| `enter` | 回车 | 下翻页 | 下翻页 | `VK_RETURN` (0x0D) | kVK_Return (36) |
-| `escape` | Esc | 退出全屏 | 退出全屏 | `VK_ESCAPE` (0x1B) | kVK_Escape (53) |
-| `f5` | 开始演示 | Win: 从头演; Mac: 从当前 | F5 | `VK_F5` (0x74) | kVK_F5 (96) |
-| `shift_f5` | 从当前页演 | Win: 从当前页 | — | 组合键 | 组合键 |
-| `b` | 黑屏 | 黑屏切换 | — | `VK_B` (0x42) | kVK_ANSI_B (11) |
-| `period` | 白/黑屏切换 | 切换 | 切换 | `VK_OEM_PERIOD` (0xBE) | kVK_ANSI_Period (47) |
-| `home` | 回首页 | 第 1 页 | 第 1 页 | `VK_HOME` (0x24) | kVK_Home (115) |
-| `end` | 跳末页 | 末页 | 末页 | `VK_END` (0x23) | kVK_End (119) |
+| `code` | Meaning | PowerPoint | Keynote | Windows VK | macOS keyCode |
+|--------|---------|-----------|---------|-----------|---------------|
+| `page_up` | Previous slide | prev | prev | `VK_PRIOR` (0x21) | kVK_PageUp (116) |
+| `page_down` | Next slide | next | next | `VK_NEXT` (0x22) | kVK_PageDown (121) |
+| `arrow_left` | Left arrow | prev (some) | prev | `VK_LEFT` (0x25) | kVK_LeftArrow (123) |
+| `arrow_right` | Right arrow | next (some) | next | `VK_RIGHT` (0x27) | kVK_RightArrow (124) |
+| `space` | Space | next/animation | next | `VK_SPACE` (0x20) | kVK_Space (49) |
+| `enter` | Enter | next | next | `VK_RETURN` (0x0D) | kVK_Return (36) |
+| `escape` | Esc | exit fullscreen | exit fullscreen | `VK_ESCAPE` (0x1B) | kVK_Escape (53) |
+| `f5` | Start presentation | Win: from start; Mac: from current | F5 | `VK_F5` (0x74) | kVK_F5 (96) |
+| `shift_f5` | Start from current | Win: from current | — | combo | combo |
+| `b` | Black screen | toggle black | — | `VK_B` (0x42) | kVK_ANSI_B (11) |
+| `period` | Toggle screen | toggle | toggle | `VK_OEM_PERIOD` (0xBE) | kVK_ANSI_Period (47) |
+| `home` | First slide | slide 1 | slide 1 | `VK_HOME` (0x24) | kVK_Home (115) |
+| `end` | Last slide | last slide | last slide | `VK_END` (0x23) | kVK_End (119) |
 
-**Modifiers**（用于 key_combo）：`ctrl` / `shift` / `alt` / `cmd`（macOS 的 cmd 映射为 Win 的 ctrl，反之亦然，由服务端处理跨平台语义）。
+**Modifiers** (for `key_combo`): `ctrl` / `shift` / `alt` / `cmd`. (macOS's `cmd` maps to Windows' `ctrl` and vice versa; the server handles cross-platform semantics.)
 
-## 7. 连接生命周期
+## 7. Connection lifecycle
 
 ```
-[TCP 连接建立]
+[TCP connection established]
    │
-[WS 握手完成]
+[WebSocket handshake complete]
    │
-C→S: hello (含 pair_code)
+C→S: hello (with pair_code)
    │
-   ├── S→C: hello_ack   → 进入"已认证"状态，可收发业务消息
+   ├── S→C: hello_ack   → enters "authenticated" state, business messages allowed
    │
-   └── S→C: hello_nack  → 服务端关闭连接
+   └── S→C: hello_nack  → server closes connection
    │
-[C→S: key / ping ...]   ← 业务消息仅在已认证状态处理
+[C→S: key / ping ...]   ← business messages only in authenticated state
 [S→C: key_result / pong / state ...]
    │
-[任意一方关闭 / 心跳超时] → 连接结束
+[either side closes / heartbeat timeout] → connection ends
 ```
 
-服务端在未认证状态收到非 `hello` 消息时，回 `error{not_handshaked}` 并可断开。
+If the server receives a non-`hello` message while unauthenticated, it replies with `error{not_handshaked}` and may disconnect.
 
-## 8. 服务发现（mDNS / Bonjour）
+## 8. Service discovery (mDNS / Bonjour)
 
-伴侣程序启动后在局域网广播自己，便于安卓自动发现，免去手输 IP。
+The companion advertises itself on the LAN so the Android client can discover it automatically, without manual IP entry.
 
-- **服务类型**：`_pptclicker._tcp.`
-- **服务名**：`PPT Clicker @ <hostname>`（如 `PPT Clicker @ DESKTOP-ABC`）
-- **TXT 记录**：
-  - `v=1`（协议版本）
+- **Service type**: `_pptclicker._tcp.`
+- **Service name**: `PPT Clicker @ <hostname>` (e.g. `PPT Clicker @ DESKTOP-ABC`)
+- **TXT records**:
+  - `v=1` (protocol version)
   - `port=48721`
   - `platform=windows|macos`
   - `name=<hostname>`
 
-安卓用 `NsdManager` 扫描 `_pptclicker._tcp`，发现后直接尝试 `ws://<ip>:48721/`。
-发现失败时 UI 提供手动输入 IP 入口（兜底）。
+The Android app scans `_pptclicker._tcp` via `NsdManager`; on discovery it connects to `ws://<ip>:48721/`. If discovery fails, the UI offers manual IP entry as a fallback.
 
-## 9. 版本演进
+## 9. Versioning
 
-- `v` 字段即协议大版本，不兼容变更必须 +1。
-- 新增 `type` / `data` 字段属于向后兼容，老实现应忽略未知字段。
-- 客户端与伴侣 `caps` 取交集，只用双方都支持的能力。
+- `v` is the major protocol version; breaking changes bump it.
+- Adding new `type`s or `data` fields is backward-compatible; old implementations should ignore unknown fields.
+- Clients and companions intersect their `caps` and only use mutually supported capabilities.
 
-## 10. MVP 实现清单
+## 10. MVP implementation checklist
 
-| 必做 | 项 |
-|------|----|
-| ✅ | WebSocket server + client（双方） |
+| Required | Item |
+|----------|------|
+| ✅ | WebSocket server + client (both sides) |
 | ✅ | `hello` / `hello_ack` / `hello_nack` |
-| ✅ | `key`（含 §6 中的所有基础键）+ `key_result` |
+| ✅ | `key` (all basic keys in §6) + `key_result` |
 | ✅ | `ping` / `pong` |
 | ✅ | `error` |
-| ✅ | mDNS 服务发现 |
-| ✅ | 配对码（默认开启，可关） |
+| ✅ | mDNS service discovery |
+| ✅ | Pairing code (on by default, disableable) |
 
-| 后续 | 项 |
-|------|----|
-| 🔜 P1 | `key_combo`、`state`（PPT 解析） |
-| 🔜 P2 | TLS / `wss`、配对码强化 |
+| Future | Item |
+|--------|------|
+| 🔜 P1 | `key_combo`, `state` (PPT parsing) |
+| 🔜 P2 | TLS / `wss`, strengthened pairing |

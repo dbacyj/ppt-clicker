@@ -1,121 +1,108 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PPT Clicker — Turn your phone into a presentation remote</title>
-<meta name="description" content="把手机变成翻页笔 / Turn your phone into a presentation remote. Bluetooth HID (driver-free) or WiFi companion. Free & open source.">
+<title>PPT Clicker — Your phone, your presentation remote</title>
+<meta name="description" content="Turn your phone into a presentation remote. Bluetooth HID (driver-free) or WiFi companion. Free & open source.">
 <style>
   :root {
     --primary: #1565C0;
     --accent: #FF6F00;
     --bg: #0f1419;
     --card: #1b2128;
+    --border: rgba(255,255,255,0.06);
     --text: #ffffff;
     --muted: #9aa6b2;
     --green: #3DDC84;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background: var(--bg);
     color: var(--text);
-    line-height: 1.6;
+    line-height: 1.65;
     padding: 40px 20px;
+    -webkit-font-smoothing: antialiased;
   }
-  .container { max-width: 720px; margin: 0 auto; }
-  .hero { text-align: center; padding: 40px 0 30px; }
+  .container { max-width: 680px; margin: 0 auto; }
+
+  .hero { text-align: center; padding: 30px 0 40px; }
   .hero h1 {
-    font-size: 2.6em;
-    margin-bottom: 12px;
-    background: linear-gradient(135deg, var(--primary), var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-size: 2.8em;
+    margin-bottom: 14px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
   }
-  .hero .subtitle-en { color: var(--muted); font-size: 1em; margin-bottom: 4px; }
-  .hero .subtitle-cn { color: var(--text); font-size: 1.15em; max-width: 520px; margin: 0 auto; }
-  .badge {
+  .hero .tagline { color: var(--muted); font-size: 1.15em; max-width: 460px; margin: 0 auto 20px; }
+  .badges { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
+  .badge img { height: 22px; }
+
+  .cta { text-align: center; margin: 36px 0; }
+  .cta-btn {
     display: inline-block;
-    margin-top: 16px;
-    padding: 4px 14px;
-    border-radius: 20px;
-    background: rgba(61,220,132,0.12);
-    color: var(--green);
-    font-size: 0.85em;
+    padding: 14px 36px;
+    background: var(--primary);
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
     font-weight: 600;
+    font-size: 1.05em;
+    transition: transform 0.15s, background 0.15s;
   }
-  .modes {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin: 40px 0;
-  }
+  .cta-btn:hover { transform: translateY(-1px); background: #1976D2; }
+  .cta-meta { color: var(--muted); font-size: 0.85em; margin-top: 12px; }
+  .cta-meta a { color: var(--primary); text-decoration: none; }
+
+  .section { margin: 44px 0; }
+  .section h2 { font-size: 1.4em; margin-bottom: 18px; font-weight: 600; }
+
+  .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
   .mode {
     background: var(--card);
-    border-radius: 12px;
-    padding: 24px;
-    border: 1px solid rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px;
   }
-  .mode h3 { color: var(--accent); margin-bottom: 8px; font-size: 1.05em; }
+  .mode h3 { color: var(--accent); margin-bottom: 8px; font-size: 1em; }
   .mode p { color: var(--muted); font-size: 0.92em; }
-  .tag { display: inline-block; font-size: 0.72em; padding: 2px 8px; border-radius: 4px; background: rgba(61,220,132,0.15); color: var(--green); margin-top: 10px; }
-  .section {
-    background: var(--card);
-    border-radius: 12px;
-    padding: 28px;
-    margin: 24px 0;
+  .mode .pill {
+    display: inline-block; font-size: 0.72em; padding: 2px 8px;
+    border-radius: 4px; background: rgba(61,220,132,0.12); color: var(--green); margin-top: 10px;
   }
-  .section h2 { margin-bottom: 18px; font-size: 1.25em; }
-  .dl-grid { display: grid; gap: 12px; }
-  .dl-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 16px;
-    background: rgba(255,255,255,0.03);
-    border-radius: 8px;
-    text-decoration: none;
-    color: var(--text);
-    transition: background 0.2s;
+
+  .features { list-style: none; }
+  .features li {
+    padding: 8px 0; color: var(--text); font-size: 0.95em;
+    border-bottom: 1px solid var(--border);
   }
-  .dl-item:hover { background: rgba(255,255,255,0.07); }
-  .dl-item.disabled { opacity: 0.5; cursor: not-allowed; }
-  .dl-name { font-weight: 600; }
-  .dl-meta { color: var(--muted); font-size: 0.82em; margin-top: 2px; }
-  .dl-arrow { color: var(--primary); font-size: 1.2em; }
+  .features li:last-child { border-bottom: none; }
+  .features li::before { content: "✓ "; color: var(--green); font-weight: bold; }
+
   .guide {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
     padding: 24px;
-    background: rgba(255,179,0,0.08);
-    border-left: 3px solid var(--accent);
-    border-radius: 4px;
-    margin: 24px 0;
   }
-  .guide h3 { color: var(--accent); margin-bottom: 12px; }
+  .guide h3 { color: var(--accent); margin-bottom: 10px; font-size: 1.05em; }
   .guide ol { margin-left: 20px; color: var(--muted); }
-  .guide li { margin-bottom: 8px; }
-  .guide p { color: var(--muted); }
-  .sponsor { text-align: center; }
-  .sponsor p { color: var(--muted); margin-bottom: 20px; font-size: 0.92em; }
-  .sponsor-links { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
-  .sponsor-btn {
-    display: inline-block;
-    padding: 10px 22px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.92em;
-    transition: transform 0.15s, opacity 0.15s;
+  .guide li { margin-bottom: 6px; }
+  .guide code { background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+
+  .note-small { font-size: 0.82em; color: var(--muted); margin-top: 14px; }
+
+  .footer {
+    text-align: center; color: var(--muted); font-size: 0.88em;
+    margin-top: 56px; padding-top: 28px; border-top: 1px solid var(--border);
   }
-  .sponsor-btn:hover { transform: translateY(-1px); opacity: 0.9; }
-  .sponsor-btn.github { background: var(--primary); color: white; }
-  .sponsor-btn.afadian { background: #ea4aaa; color: white; }
-  .note-small { font-size: 0.8em; color: var(--muted); margin-top: 14px; }
-  .footer { text-align: center; color: var(--muted); font-size: 0.85em; margin-top: 48px; padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.05); }
-  .footer a { color: var(--primary); text-decoration: none; }
+  .footer-links { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin-bottom: 10px; }
+  .footer-links a { color: var(--muted); text-decoration: none; }
+  .footer-links a:hover { color: var(--text); }
+
   @media (max-width: 540px) {
     .modes { grid-template-columns: 1fr; }
-    .hero h1 { font-size: 2em; }
+    .hero h1 { font-size: 2.2em; }
   }
 </style>
 </head>
@@ -123,103 +110,98 @@
 <div class="container">
 
   <div class="hero">
-    <h1>📱 PPT Clicker</h1>
-    <p class="subtitle-en">Turn your phone into a presentation remote — free &amp; open source</p>
-    <p class="subtitle-cn">把手机变成翻页笔。蓝牙 HID 免安装即用，WiFi 伴侣解锁更多功能，完全免费开源。</p>
-    <span class="badge">MIT · Open Source · Free</span>
+    <h1>PPT Clicker</h1>
+    <p class="tagline">Turn your phone into a presentation remote. Bluetooth HID or WiFi companion — no hardware required.</p>
+    <div class="badges">
+      <a class="badge" href="https://github.com/dbacyj/ppt-clicker/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/dbacyj/ppt-clicker?color=blue"></a>
+      <a class="badge" href="https://github.com/dbacyj/ppt-clicker/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
+      <a class="badge" href="https://github.com/dbacyj/ppt-clicker"><img alt="GitHub stars" src="https://img.shields.io/github/stars/dbacyj/ppt-clicker?style=social"></a>
+    </div>
   </div>
 
-  <div class="modes">
-    <div class="mode">
-      <h3>🔵 蓝牙 · 免安装 / Bluetooth</h3>
-      <p>手机模拟成蓝牙键盘，电脑原生识别，配对即用，无需在电脑装任何软件。</p>
-      <span class="tag">Android only</span>
-    </div>
-    <div class="mode">
-      <h3>📶 WiFi · 伴侣程序 / Companion</h3>
-      <p>电脑运行一个小程序，手机走局域网下发指令。为提词器/AI 功能预留通道。</p>
-      <span class="tag">All platforms</span>
+  <div class="cta">
+    <a class="cta-btn" id="dl-android" href="https://github.com/dbacyj/ppt-clicker/releases/latest">Download for Android</a>
+    <div class="cta-meta" id="dl-meta">Latest release · Android 9+</div>
+  </div>
+
+  <div class="section">
+    <h2>Two ways to connect</h2>
+    <div class="modes">
+      <div class="mode">
+        <h3>Bluetooth HID</h3>
+        <p>Your phone appears as a standard Bluetooth keyboard. Pair once, click forever — nothing to install on the PC.</p>
+        <span class="pill">Driver-free</span>
+      </div>
+      <div class="mode">
+        <h3>WiFi Companion</h3>
+        <p>Run a small companion program on the PC and control slides over your local network. Lower latency, slide-aware features ahead.</p>
+        <span class="pill">Optional</span>
+      </div>
     </div>
   </div>
 
   <div class="section">
-    <h2>⬇️ 下载 / Download</h2>
-    <div class="dl-grid">
-      <a class="dl-item" id="dl-android" href="https://github.com/dbacyj/ppt-clicker/releases/latest">
-        <div>
-          <div class="dl-name">🤖 安卓 App / Android</div>
-          <div class="dl-meta" id="dl-android-meta">app-release.apk · Android 9+</div>
-        </div>
-        <span class="dl-arrow">↓</span>
-      </a>
-      <div class="dl-item disabled">
-        <div>
-          <div class="dl-name">🪟 Windows 伴侣 / Companion</div>
-          <div class="dl-meta">即将推出 / Coming soon</div>
-        </div>
-        <span style="color:var(--muted)">—</span>
-      </div>
-      <div class="dl-item disabled">
-        <div>
-          <div class="dl-name">🍎 macOS 伴侣 / Companion</div>
-          <div class="dl-meta">即将推出 / Coming soon</div>
-        </div>
-        <span style="color:var(--muted)">—</span>
-      </div>
+    <h2>Features</h2>
+    <ul class="features">
+      <li>Next / previous slide</li>
+      <li>Start presentation, exit fullscreen, black screen</li>
+      <li>Jump to first / last slide</li>
+      <li>Automatic Bluetooth pairing and reconnect</li>
+      <li>WiFi companion with auto-discovery and pairing code</li>
+      <li>Graceful Bluetooth → WiFi fallback on unsupported devices</li>
+    </ul>
+    <p class="note-small">On the roadmap: teleprompter with speaker notes, timer with haptic alerts, spotlight, voice control, AI assistant.</p>
+  </div>
+
+  <div class="section">
+    <h2>Getting started</h2>
+    <div class="guide">
+      <h3>Bluetooth mode (recommended)</h3>
+      <ol>
+        <li>Install the app and enable Bluetooth</li>
+        <li>On your PC, search Bluetooth devices and pair with "PPT Clicker"</li>
+        <li>Start presenting — the app shows "Connected"</li>
+      </ol>
     </div>
-    <p class="note-small">所有版本也可在 <a href="https://github.com/dbacyj/ppt-clicker/releases" style="color:var(--primary)">GitHub Releases</a> 手动下载。</p>
-  </div>
-
-  <div class="guide">
-    <h3>📖 安装指引 / Install Guide</h3>
-    <ol>
-      <li><strong>Android：</strong>下载 APK 后点击安装。若提示"未知来源"，前往 设置 → 安全 → 允许从此来源安装。<br><span style="font-size:0.88em">Download the APK and tap to install. Enable "Install unknown apps" if prompted.</span></li>
-      <li><strong>Windows：</strong>双击 exe 运行。若被杀软拦截，请添加到信任列表（按键模拟的正常行为）。</li>
-      <li><strong>macOS：</strong><code>chmod +x</code> 后运行。首次需在「系统设置 → 隐私 → 辅助功能」授权。</li>
-    </ol>
-  </div>
-
-  <div class="guide">
-    <h3>🔗 连接方式 / How to Connect</h3>
-    <p><strong>蓝牙模式 / Bluetooth：</strong>手机开启蓝牙 → 电脑蓝牙搜索 "PPT Clicker" → 配对 → 翻页。</p>
-    <p style="margin-top:8px;"><strong>WiFi 模式：</strong>电脑运行伴侣程序 → 手机与电脑连同一 WiFi → App 自动发现 → 输入配对码。</p>
-  </div>
-
-  <div class="section sponsor">
-    <h2>☕ 支持这个项目 / Support</h2>
-    <p>如果觉得有用，欢迎支持开发者继续维护。/ If you find this useful, consider supporting development.</p>
-    <div class="sponsor-links">
-      <a class="sponsor-btn github" href="https://github.com/sponsors/dbacyj">GitHub Sponsors</a>
-      <a class="sponsor-btn afadian" href="https://afdian.net/a/dbacyj">爱发电 / Afdian</a>
+    <div class="guide" style="margin-top:14px">
+      <h3>WiFi companion mode</h3>
+      <ol>
+        <li>Run the companion program on your PC, note the pairing code</li>
+        <li>Connect both devices to the same WiFi network</li>
+        <li>In the app, select WiFi mode — it auto-discovers your PC, enter the code</li>
+      </ol>
     </div>
-    <p class="note-small">赞助渠道正在开通中，敬请期待。/ Sponsorship channels are being set up — stay tuned.</p>
   </div>
 
   <div class="footer">
-    PPT Clicker · MIT Open Source · <a href="https://github.com/dbacyj/ppt-clicker">GitHub</a> · <a href="https://github.com/dbacyj/ppt-clicker/issues">Report Issue</a>
+    <div class="footer-links">
+      <a href="https://github.com/dbacyj/ppt-clicker">GitHub</a>
+      <a href="https://github.com/dbacyj/ppt-clicker/releases">Releases</a>
+      <a href="https://github.com/dbacyj/ppt-clicker/issues">Issues</a>
+      <a href="https://github.com/dbacyj/ppt-clicker/blob/main/README.md">Docs</a>
+      <a href="https://github.com/sponsors/dbacyj">Sponsor</a>
+    </div>
+    <div>MIT License · Free &amp; open source · Built with care</div>
   </div>
 
 </div>
 <script>
-  // 从 GitHub Release API 自动拉取最新 APK 下载链接与大小
-  // Auto-fetch latest APK download URL and size from GitHub Release API
+  // Fetch latest release info and update the download button + metadata.
   (function() {
     var repo = 'dbacyj/ppt-clicker';
     fetch('https://api.github.com/repos/' + repo + '/releases/latest')
       .then(function(r) { return r.ok ? r.json() : null; })
       .then(function(rel) {
         if (!rel || !rel.assets) return;
-        var meta = document.getElementById('dl-android-meta');
-        rel.assets.forEach(function(a) {
-          // APK 文件匹配（.apk 后缀）
-          if (/\.apk$/i.test(a.name)) {
-            var link = document.getElementById('dl-android');
-            link.href = a.browser_download_url;
-            meta.textContent = a.name + ' · ' + (a.size / 1048576).toFixed(1) + ' MB · v' + (rel.tag_name || '');
-          }
-        });
+        var meta = document.getElementById('dl-meta');
+        var apkAsset = rel.assets.find(function(a) { return /\.apk$/i.test(a.name); });
+        if (apkAsset) {
+          document.getElementById('dl-android').href = apkAsset.browser_download_url;
+          var size = (apkAsset.size / 1048576).toFixed(1);
+          meta.textContent = (rel.tag_name || 'latest') + ' · ' + apkAsset.name + ' · ' + size + ' MB · Android 9+';
+        }
       })
-      .catch(function() { /* Release 不存在时静默，保持默认链接指向 releases 页 */ });
+      .catch(function() { /* fall back to releases page link */ });
   })();
 </script>
 </body>

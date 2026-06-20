@@ -105,7 +105,7 @@ class MainActivity : AppCompatActivity() {
                 1 -> switchMode(if (mode == ConnMode.BLUETOOTH) ConnMode.WIFI else ConnMode.BLUETOOTH)
                 2 -> promptIp()
                 3 -> promptPairCode()
-                4 -> toast("PPT 翻页笔 0.1.0\n手机即翻页笔")
+                4 -> toast("PPT Clicker 0.1.0\nYour phone, your clicker")
             }
             true
         }

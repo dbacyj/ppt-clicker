@@ -1,42 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">PPT 翻页笔</string>
+    <string name="app_name">PPT Clicker</string>
 
-    <!-- 连接模式 -->
-    <string name="mode_bluetooth">蓝牙 · 免安装</string>
-    <string name="mode_wifi">WiFi · 伴侣程序</string>
+    <!-- Connection modes -->
+    <string name="mode_bluetooth">Bluetooth · Driver-free</string>
+    <string name="mode_wifi">WiFi · Companion</string>
 
-    <!-- 状态 -->
-    <string name="status_unsupported">本机不支持蓝牙 HID，请改用 WiFi 模式</string>
-    <string name="status_bluetooth_off">请先开启蓝牙</string>
-    <string name="status_no_permission">缺少蓝牙权限，请在设置中授权</string>
-    <string name="status_ready_bluetooth">就绪：在电脑蓝牙里搜索并配对 "PPT Clicker"</string>
-    <string name="status_connected_bluetooth">已连接电脑</string>
-    <string name="status_disconnected_bluetooth">已断开</string>
-    <string name="status_scanning">正在搜索电脑伴侣程序…</string>
-    <string name="status_connecting">正在连接 %1$s…</string>
-    <string name="status_handshaking">正在握手…</string>
-    <string name="status_connected_wifi">已连接 %1$s</string>
-    <string name="status_error">错误：%1$s</string>
+    <!-- Status -->
+    <string name="status_unsupported">Bluetooth HID not supported on this device — use WiFi mode</string>
+    <string name="status_bluetooth_off">Please enable Bluetooth</string>
+    <string name="status_no_permission">Bluetooth permission missing — grant it in Settings</string>
+    <string name="status_ready_bluetooth">Ready: pair with "PPT Clicker" from your PC\'s Bluetooth settings</string>
+    <string name="status_connected_bluetooth">Connected to PC</string>
+    <string name="status_disconnected_bluetooth">Disconnected</string>
+    <string name="status_scanning">Searching for companion…</string>
+    <string name="status_connecting">Connecting to %1$s…</string>
+    <string name="status_handshaking">Handshaking…</string>
+    <string name="status_connected_wifi">Connected to %1$s</string>
+    <string name="status_error">Error: %1$s</string>
 
-    <!-- 按钮 -->
-    <string name="btn_prev">上一页</string>
-    <string name="btn_next">下一页</string>
-    <string name="btn_fullscreen">开始演示 (F5)</string>
-    <string name="btn_exit">退出全屏 (Esc)</string>
-    <string name="btn_black">黑屏 (B)</string>
-    <string name="btn_white">白/黑屏 (.)</string>
-    <string name="btn_home">回首页</string>
-    <string name="btn_end">末页</string>
+    <!-- Buttons -->
+    <string name="btn_prev">Previous</string>
+    <string name="btn_next">Next</string>
+    <string name="btn_fullscreen">Start (F5)</string>
+    <string name="btn_exit">Exit (Esc)</string>
+    <string name="btn_black">Black (B)</string>
+    <string name="btn_white">Toggle (.)</string>
+    <string name="btn_home">First</string>
+    <string name="btn_end">Last</string>
 
-    <!-- 菜单 -->
-    <string name="menu_switch_mode">切换连接模式</string>
-    <string name="menu_manual_ip">手动输入 IP</string>
-    <string name="menu_pair_code">配对码</string>
-    <string name="menu_about">关于</string>
+    <!-- Menu -->
+    <string name="menu_switch_mode">Switch connection mode</string>
+    <string name="menu_manual_ip">Enter IP manually</string>
+    <string name="menu_pair_code">Pairing code</string>
+    <string name="menu_about">About</string>
 
-    <!-- 弹窗 -->
-    <string name="dialog_ip_title">手动输入电脑 IP</string>
-    <string name="dialog_pair_title">输入伴侣程序显示的配对码（可留空）</string>
-    <string name="ok">确定</string>
-    <string name="cancel">取消</string>
+    <!-- Dialogs -->
+    <string name="dialog_ip_title">Enter the PC\'s IP address</string>
+    <string name="dialog_pair_title">Enter the pairing code shown by the companion (optional)</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 </resources>
