@@ -1,165 +1,130 @@
 # PPT Clicker
 
-> 把手机变成翻页笔。一个 App 两种用法：**蓝牙 HID 免安装** 或 **WiFi 伴侣增强**。
+> Turn your phone into a presentation remote. **Bluetooth HID (driver-free)** or **WiFi companion**.
 
-## 这是什么
+> 把手机变成翻页笔。**蓝牙 HID 免安装** 或 **WiFi 伴侣增强**，完全免费开源。
 
-一个让你用手机控制 PPT 翻页的项目，目标是替代需要额外购买的硬件翻页笔。
+[![Release](https://img.shields.io/github/v/release/dbacyj/ppt-clicker)](https://github.com/dbacyj/ppt-clicker/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![CI](https://github.com/dbacyj/ppt-clicker/actions/workflows/ci.yml/badge.svg)](https://github.com/dbacyj/ppt-clicker/actions)
 
-**两种连接模式（双轨）：**
+## 这是什么 / What is it
 
-| 模式 | 电脑端是否需要装软件 | 适用场景 |
+A project that lets you control presentation slides with your phone, aiming to replace dedicated hardware clickers. Available in two connection modes (dual-track):
+
+让你用手机控制 PPT 翻页，目标是替代需要额外购买的硬件翻页笔。两种连接模式（双轨）：
+
+| 模式 / Mode | 电脑需装软件? / PC software needed? | 适用 / Use case |
 |------|---------------------|----------|
-| **蓝牙 HID** | ❌ 完全免安装 | 手机模拟成蓝牙键盘，电脑原生识别，即配即用 |
-| **WiFi 伴侣** | ✅ 需运行伴侣程序 | 通过局域网下发指令，为后续提词器/计时/AI 功能预留通道 |
+| **蓝牙 HID / Bluetooth HID** | ❌ 完全免安装 / None | 手机模拟成蓝牙键盘，电脑原生识别，即配即用 / Phone emulates a BT keyboard, works out of the box |
+| **WiFi 伴侣 / WiFi Companion** | ✅ 需运行伴侣程序 / Companion app | 通过局域网下发指令，为后续提词器/计时/AI 功能预留通道 / LAN-based, unlocks future features |
 
-> ⚠️ 蓝牙 HID 模式依赖 Android 9+ 的 `BluetoothHidDevice` API。**部分国产 ROM（MIUI/EMUI/ColorOS）阉割了该能力**，App 会自动探测并降级到 WiFi 模式。
-> iOS 受苹果限制无法模拟蓝牙键鼠，iPhone 用户需走 WiFi 伴侣模式（iOS 端暂未实现，见路线图）。
+> ⚠️ Bluetooth HID relies on the `BluetoothHidDevice` API (Android 9+). **Some Chinese ROMs (MIUI/EMUI/ColorOS) strip this capability** — the app auto-detects and falls back to WiFi mode.
+>
+> iOS cannot emulate a Bluetooth keyboard due to Apple restrictions; iPhone users must use the WiFi companion mode (iOS client not yet implemented, see roadmap).
 
-## 功能（MVP v0.1.0）
+## 功能 / Features (v0.1.0)
 
-- ✅ 上/下翻页（PageUp/PageDown）
-- ✅ 开始演示（F5）、退出全屏（Esc）
-- ✅ 黑屏（B）、白/黑屏切换（.）
-- ✅ 回首页（Home）、末页（End）
-- ✅ 蓝牙 HID 自动配对连接
-- ✅ WiFi 伴侣：mDNS 自动发现 + 配对码
-- ✅ 心跳保活、断线重连
-- ✅ 蓝牙不可用时自动降级 WiFi
+- ✅ 上/下翻页 / Next & previous slide (PageUp/PageDown)
+- ✅ 开始演示 (F5)、退出全屏 (Esc) / Start presentation, exit fullscreen
+- ✅ 黑屏 (B)、白/黑屏切换 (.) / Black screen, screen toggle
+- ✅ 回首页 (Home)、末页 (End) / Jump to first / last slide
+- ✅ 蓝牙 HID 自动配对 / Auto Bluetooth pairing
+- ✅ WiFi 伴侣：mDNS 自动发现 + 配对码 / mDNS discovery + pairing code
+- ✅ 心跳保活、断线重连 / Heartbeat, auto-reconnect
+- ✅ 蓝牙不可用时自动降级 WiFi / Auto fallback to WiFi
 
-后续（P1/P2）：提词器、备注同步、当前页、计时震动、聚光灯、语音翻页、AI 演讲辅助。
+后续 / Roadmap (P1/P2)：提词器、备注同步、当前页、计时震动、聚光灯、语音翻页、AI 演讲辅助。
 
-## 仓库结构
+## 下载 / Download
+
+⬇️ **[Latest Release](https://github.com/dbacyj/ppt-clicker/releases/latest)** — Android APK
+
+官网 / Website: https://dbacyj.github.io/ppt-clicker/
+
+## 使用流程 / Usage
+
+**蓝牙模式 / Bluetooth (driver-free):**
+1. 手机装好 App，打开蓝牙，进入「蓝牙 · 免安装」模式 / Open the app, enable Bluetooth, select Bluetooth mode
+2. 电脑蓝牙设置里搜索设备，找到 "PPT Clicker" 并配对 / Pair with "PPT Clicker" from your PC's Bluetooth settings
+3. 手机状态显示「已连接电脑」后即可翻页 / Start clicking once it shows "Connected"
+
+**WiFi 模式 / WiFi (companion):**
+1. 电脑运行伴侣程序，记下显示的配对码 / Run the companion on your PC, note the pairing code
+2. 手机与电脑连同一 WiFi / Connect both devices to the same WiFi
+3. App 切到「WiFi · 伴侣程序」模式，自动发现电脑，输入配对码 / Select WiFi mode, auto-discover, enter code
+
+## 仓库结构 / Repository
 
 ```
 ppt-clicker/
-├── .github/
-│   ├── workflows/      # GitHub Actions（CI + 自动编译发布）
-│   └── scripts/        # 签名密钥配置指引
-├── protocol/           # WiFi 通信协议规范（安卓+两端伴侣共用）
-├── android-app/        # 安卓 App（Kotlin，minSdk 28）
+├── .github/workflows/  # GitHub Actions (CI + release build)
+├── protocol/           # WiFi protocol spec (shared by all clients/companions)
+├── android-app/        # Android app (Kotlin, minSdk 28)
 ├── companion/
-│   ├── windows/        # Windows 伴侣（C# .NET 8）
-│   └── macos/          # macOS 伴侣（Swift，Network.framework）
-├── landing/            # GitHub Pages 落地页
-├── LICENSE             # MIT 许可证
-└── README.md
+│   ├── windows/        # Windows companion (C# .NET 8)
+│   └── macos/          # macOS companion (Swift, Network.framework)
+└── docs/               # GitHub Pages landing page
 ```
 
-## 构建与运行
+## 构建 / Build
 
-### 安卓 App（推荐：GitHub Actions 云端编译，无需本地环境）
-
-**一键发布**：推送 `v*` 格式的 tag，GitHub Actions 自动编译签名 APK 并发布到 Release。
-
+**Android (GitHub Actions cloud build, no local setup needed):**
+Push a `v*` tag — CI compiles a signed APK and publishes it to Releases automatically.
 ```bash
-# 标记版本并推送（首次需配置签名密钥，见 .github/scripts/gen-keystore.md）
-git tag v0.1.0
-git push origin v0.1.0
-# 等待 ~3 分钟，在仓库的 Releases 页面下载 APK
+git tag v0.1.0 && git push origin v0.1.0
 ```
 
-CI 也会在每次 push/PR 到 main 时自动编译 debug APK 做健康检查（见 `.github/workflows/ci.yml`）。
-
-**本地调试**（可选，需 Android Studio + JDK 17）：
-
+**Local Android build** (Android Studio + JDK 17):
 ```bash
-cd android-app
-./gradlew assembleDebug
-# 产物：app/build/outputs/apk/debug/app-debug.apk
+cd android-app && ./gradlew assembleDebug
 ```
 
-### Windows 伴侣
-
-需要 .NET 8 SDK。
-
+**Windows companion** (.NET 8 SDK):
 ```bash
-cd companion/windows
-dotnet publish -c Release
-# 产物：bin/Release/net8.0-windows/win-x64/publish/PPTClicker.exe（自包含，无需装运行时）
+cd companion/windows && dotnet publish -c Release
 ```
 
-运行：双击 `PPTClicker.exe`，控制台会显示配对码与监听端口。
-
-### macOS 伴侣
-
-需要 Xcode Command Line Tools（Swift 5.9+）。
-
+**macOS companion** (Xcode Command Line Tools, Swift 5.9+):
 ```bash
-cd companion/macos
-swift build -c release
-# 产物：.build/release/PPTClicker
-.build/release/PPTClicker
+cd companion/macos && swift build -c release
 ```
 
-> ⚠️ macOS 首次运行需在「系统设置 → 隐私与安全性 → 辅助功能」中授权本程序（CGEvent 按键需要）。
+> ⚠️ macOS: first run requires granting **Accessibility** permission (System Settings → Privacy → Accessibility) for CGEvent to work.
 
-## 使用流程
+## 技术文档 / Docs
 
-**蓝牙模式（免安装）：**
-1. 手机装好 App，打开蓝牙，进入「蓝牙 · 免安装」模式
-2. 电脑蓝牙设置里搜索设备，找到 "PPT Clicker" 并配对
-3. 手机状态显示「已连接电脑」后即可翻页
+- [WiFi 通信协议规范 / Protocol spec](protocol/spec.md)
+- [键位映射表 / Key mapping](protocol/spec.md#6-键值表逻辑键名)
 
-**WiFi 模式（伴侣程序）：**
-1. 电脑运行伴侣程序，记下显示的配对码
-2. 手机与电脑连同一 WiFi
-3. App 切到「WiFi · 伴侣程序」模式，自动发现电脑，输入配对码
-4. 连接成功后即可翻页
+## 路线图 / Roadmap
 
-## 发布流程
+- [x] MVP：双轨翻页（蓝牙 HID + WiFi 伴侣）/ Dual-track clicking
+- [ ] P1：提词器、当前页、计时震动、聚光灯 / Teleprompter, current slide, timer, spotlight
+- [ ] P2：语音翻页、AI 演讲辅助 / Voice control, AI assistance
+- [ ] iOS 端 / iOS client
+- [ ] 应用商店上架 / App store release
 
-本项目通过 **GitHub 一站式发布**，零账号、零成本。
-
-### 发布新版本（3 步）
-
-1. **配置签名密钥**（仅首次）：按 [.github/scripts/gen-keystore.md](.github/scripts/gen-keystore.md) 生成 keystore 并添加到 GitHub Secrets
-2. **打 tag 并推送**：
-   ```bash
-   git tag v0.1.0
-   git push origin v0.1.0
-   ```
-3. **等待 ~3 分钟**：GitHub Actions 自动编译签名 APK 并创建 Release，在仓库 **Releases** 页面即可下载
-
-### 官网落地页
-
-开启 GitHub Pages（Settings → Pages → Source: `main` 分支），`landing/index.html` 会自动部署为 `https://<你的用户名>.github.io/ppt-clicker/`。落地页会从 GitHub Release API 自动拉取最新下载链接。
-
-### 后续上架应用商店（可选）
-
-- Google Play：$25 一次性（个人账号需 ≥20 人测试 14 天后才能公开发布）
-- Apple App Store：$99/年（需开发 iOS 端 + 电脑伴侣模式）
-
-## 技术文档
-
-- [WiFi 通信协议规范](protocol/spec.md)
-- [键位映射表](protocol/spec.md#6-键值表逻辑键名)
-
-## 路线图
-
-- [x] MVP：双轨翻页（蓝牙 HID + WiFi 伴侣）
-- [ ] P1：提词器、当前页、计时震动、聚光灯（依赖伴侣程序解析 PPT 状态）
-- [ ] P2：语音翻页、AI 演讲辅助
-- [ ] iOS 端（需 Apple 开发者账号 + 电脑伴侣模式）
-- [ ] 应用商店上架
-
-## 关于本项目
+## 关于本项目 / About
 
 项目初始版本由 [ZCode](https://zcode.dev/) 使用 GLM-5.2 / GLM-5-Turbo 免费额度辅助生成，属于 AI + 人类协作的开源实践。后续版本将在此基础上持续迭代维护。
 
-> 💡 **遇到问题？** 直接 [提交 Issue](https://github.com/dbacyj/ppt-clicker/issues) 反馈，或 [Fork 后提交 PR](https://github.com/dbacyj/ppt-clicker/fork) 直接修改——开源项目欢迎任何形式的参与。
+> The initial version was AI-assisted via ZCode (GLM models), an AI + human collaboration experiment. Active maintenance continues on top of it.
 
-## 许可证
+> 💡 **遇到问题？/ Got an issue?** [提交 Issue](https://github.com/dbacyj/ppt-clicker/issues) 反馈，或 [Fork 后提交 PR](https://github.com/dbacyj/ppt-clicker/fork) 直接修改——开源项目欢迎任何形式的参与。
 
-[MIT](LICENSE) —— 自由使用、修改、分发。
+## 许可证 / License
 
-## 赞助
+[MIT](LICENSE) — 自由使用、修改、分发 / Free to use, modify, and distribute.
+
+## 赞助 / Sponsor
 
 本项目完全免费开源。如果你觉得有用，欢迎支持开发者继续维护：
+This project is free and open source. If you find it useful, consider supporting development:
 
-- 💚 [GitHub Sponsors](https://github.com/sponsors)（国际用户，GitHub 首年免手续费）
-- 🩷 [爱发电](https://afdian.net)（国内用户，支持微信/支付宝）
+- 💚 [GitHub Sponsors](https://github.com/sponsors/dbacyj)
+- 🩷 [爱发电 / Afdian](https://afdian.net/a/dbacyj)
 
-## 贡献
+## 贡献 / Contributing
 
 欢迎提交 Issue 和 Pull Request！详见 [贡献指南](CONTRIBUTING.md)。
