@@ -19,48 +19,49 @@ internal object HidSpec {
      * 输出 Report ID = 1，结构为 [modifier, reserved, key1..key6]（8 字节）。
      */
     val reportDescriptor: ByteArray = byteArrayOf(
-        0x05, 0x01,        // Usage Page (Generic Desktop)
-        0x09, 0x06,        // Usage (Keyboard)
-        0xA1.toByte(), 0x01, // Collection (Application)
-        0x85, 0x01,        //   Report ID (1)
-        0x05, 0x07,        //   Usage Page (Keyboard/Keypad)
-        0x19, 0xE0.toByte(), //   Usage Minimum (Left Control)
-        0x29, 0xE7.toByte(), //   Usage Maximum (Right GUI)
-        0x15, 0x00,        //   Logical Minimum (0)
-        0x25, 0x01,        //   Logical Maximum (1)
-        0x75, 0x01,        //   Report Size (1)
-        0x95, 0x08,        //   Report Count (8) —— 8 个 modifier 位
-        0x81, 0x02,        //   Input (Data,Var,Abs)
-        0x95, 0x01,        //   Report Count (1)
-        0x75, 0x08,        //   Report Size (8) —— 保留字节
-        0x81, 0x01,        //   Input (Cnst,Arr,Abs)
-        0x95, 0x05,        //   Report Count (5)
-        0x75, 0x01,        //   Report Size (1) —— LED 位
-        0x05, 0x08,        //   Usage Page (LEDs)
-        0x19, 0x01,        //   Usage Minimum (Num Lock)
-        0x29, 0x05,        //   Usage Maximum (Kana)
-        0x91.toByte(), 0x02, //   Output (Data,Var,Abs)
-        0x95, 0x01,        //   Report Count (1)
-        0x75, 0x03,        //   Report Size (3) —— LED 保留位
-        0x91.toByte(), 0x01, //   Output (Cnst,Arr,Abs)
-        0x95, 0x06,        //   Report Count (6)
-        0x75, 0x08,        //   Report Size (8) —— 6 个普通按键
-        0x15, 0x00,        //   Logical Minimum (0)
-        0x25, 0xE7.toByte(), //   Logical Maximum (231)
-        0x05, 0x07,        //   Usage Page (Keyboard/Keypad)
-        0x19, 0x00,        //   Usage Minimum (0)
-        0x29, 0xE7.toByte(), //   Usage Maximum (231)
-        0x81, 0x00,        //   Input (Data,Arr,Abs)
-        0xC0               // End Collection
+        0x05, 0x01,            // Usage Page (Generic Desktop)
+        0x09, 0x06,            // Usage (Keyboard)
+        0xA1.toByte(), 0x01,   // Collection (Application)
+        0x85, 0x01,            //   Report ID (1)
+        0x05, 0x07,            //   Usage Page (Keyboard/Keypad)
+        0x19, 0xE0.toByte(),   //   Usage Minimum (Left Control)
+        0x29, 0xE7.toByte(),   //   Usage Maximum (Right GUI)
+        0x15, 0x00,            //   Logical Minimum (0)
+        0x25, 0x01,            //   Logical Maximum (1)
+        0x75, 0x01,            //   Report Size (1)
+        0x95.toByte(), 0x08,   //   Report Count (8) —— 8 个 modifier 位
+        0x81.toByte(), 0x02,   //   Input (Data,Var,Abs)
+        0x95.toByte(), 0x01,   //   Report Count (1)
+        0x75, 0x08,            //   Report Size (8) —— 保留字节
+        0x81.toByte(), 0x01,   //   Input (Cnst,Arr,Abs)
+        0x95.toByte(), 0x05,   //   Report Count (5)
+        0x75, 0x01,            //   Report Size (1) —— LED 位
+        0x05, 0x08,            //   Usage Page (LEDs)
+        0x19, 0x01,            //   Usage Minimum (Num Lock)
+        0x29, 0x05,            //   Usage Maximum (Kana)
+        0x91.toByte(), 0x02,   //   Output (Data,Var,Abs)
+        0x95.toByte(), 0x01,   //   Report Count (1)
+        0x75, 0x03,            //   Report Size (3) —— LED 保留位
+        0x91.toByte(), 0x01,   //   Output (Cnst,Arr,Abs)
+        0x95.toByte(), 0x06,   //   Report Count (6)
+        0x75, 0x08,            //   Report Size (8) —— 6 个普通按键
+        0x15, 0x00,            //   Logical Minimum (0)
+        0x25, 0xE7.toByte(),   //   Logical Maximum (231)
+        0x05, 0x07,            //   Usage Page (Keyboard/Keypad)
+        0x19, 0x00,            //   Usage Minimum (0)
+        0x29, 0xE7.toByte(),   //   Usage Maximum (231)
+        0x81.toByte(), 0x00,   //   Input (Data,Arr,Abs)
+        0xC0.toByte()          // End Collection
     )
 
-    /** SDP（服务发现协议）设置：注册为标准键盘。 */
+    /** SDP（服务发现协议）设置：注册为标准键盘，含报告描述符。 */
     fun sdpSettings(): BluetoothHidDeviceAppSdpSettings =
         BluetoothHidDeviceAppSdpSettings(
-            "PPT Clicker",       // name
+            "PPT Clicker",          // name
             "Android HID Keyboard", // description
-            "PPT Clicker",       // provider
-            BluetoothHidDevice.SUBCLASS1_KEYBOARD  // subclass
+            "PPT Clicker",          // provider
+            BluetoothHidDevice.SUBCLASS1_KEYBOARD.toByte(),  // subclass (byte)
+            reportDescriptor        // descriptors
         )
 
     // —— HID Usage（十进制，源自 USB HID Usage Table v1.21 §10）——

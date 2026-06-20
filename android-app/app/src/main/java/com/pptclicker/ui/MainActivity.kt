@@ -252,7 +252,7 @@ class MainActivity : AppCompatActivity() {
             perms.add(Manifest.permission.BLUETOOTH_SCAN)
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            perms.add(Manifest.permission.NEARBY_DEVICES)
+            // Android 13+ 无需额外权限，BLUETOOTH_SCAN/BLUETOOTH_CONNECT 已覆盖
         }
         return perms
     }

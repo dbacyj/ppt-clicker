@@ -119,9 +119,10 @@ class HidController(private val context: Context) {
         val dev = connectedDevice ?: return false
         val hid = hidDevice ?: return false
         val press = HidSpec.pressReportFor(key) ?: return false
-        val ok1 = hid.sendReport(dev, press)
+        // sendReport(reportId, data)：reportId 用我们描述符里定义的 ID=1
+        val ok1 = hid.sendReport(dev, 1, press)
         // 松开报告，避免主机认为长按
-        hid.sendReport(dev, HidSpec.releaseReport())
+        hid.sendReport(dev, 1, HidSpec.releaseReport())
         return ok1
     }
 
@@ -132,12 +133,11 @@ class HidController(private val context: Context) {
             val hid = proxy as? BluetoothHidDevice ?: return
             hidDevice = hid
             hid.registerApp(
-                HidSpec.reportDescriptor,
-                /* hostReport */ null,
-                /* hostData */ null,
-                HidSpec.sdpSettings(),
-                /* exec */ context.mainExecutor,
-                appCallback
+                HidSpec.sdpSettings(),       // sdp（含报告描述符）
+                /* inQos */ null,
+                /* outQos */ null,
+                context.mainExecutor,        // executor
+                appCallback                  // callback
             )
         }
 

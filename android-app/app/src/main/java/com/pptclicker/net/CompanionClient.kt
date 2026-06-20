@@ -76,13 +76,13 @@ class CompanionClient(
     /** 按键执行结果回调（对应 key_result）。 */
     var onKeyResult: ((id: String, ok: Boolean) -> Unit)? = null
 
-    private fun onOpen() {
+    private fun handleOpen() {
         notify(WifiState.Handshaking)
         // 握手：发送 hello
         ws?.send(Protocol.hello(pairCode, clientName, appVersion))
     }
 
-    private fun onMessage(raw: String) {
+    private fun handleMessage(raw: String) {
         val json = try { JSONObject(raw) } catch (e: Exception) {
             Log.w(TAG, "bad json: $raw"); return
         }
@@ -113,7 +113,7 @@ class CompanionClient(
         }
     }
 
-    private fun onClose(code: Int, reason: String?) {
+    private fun handleClose(code: Int, reason: String?) {
         stopPing()
         handshaked = false
         ws = null
@@ -121,7 +121,7 @@ class CompanionClient(
                else WifiState.Error("连接关闭($code): ${reason ?: ""}"))
     }
 
-    private fun onError(ex: Exception) {
+    private fun handleError(ex: Exception) {
         notify(WifiState.Error(ex.message ?: ex.javaClass.simpleName))
     }
 
@@ -148,11 +148,11 @@ class CompanionClient(
     }
 
     private inner class Client(uri: URI) : WebSocketClient(uri) {
-        override fun onOpen(handshaked: ServerHandshake?) = this@CompanionClient.onOpen()
-        override fun onMessage(message: String?) = message?.let { onMessage(it) } ?: Unit
+        override fun onOpen(handshaked: ServerHandshake?) = this@CompanionClient.handleOpen()
+        override fun onMessage(message: String?) = message?.let { this@CompanionClient.handleMessage(it) } ?: Unit
         override fun onClose(code: Int, reason: String?, remote: Boolean) =
-            this@CompanionClient.onClose(code, reason)
-        override fun onError(ex: Exception?) = this@CompanionClient.onError(ex ?: Exception("unknown"))
+            this@CompanionClient.handleClose(code, reason)
+        override fun onError(ex: Exception?) = this@CompanionClient.handleError(ex ?: Exception("unknown"))
     }
 
     companion object {

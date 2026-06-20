@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <!-- Android 13+ 附近设备权限（蓝牙 HOGP 需要） -->
-    <uses-permission android:name="android.permission.NEARBY_DEVICES" />
+    <!-- 注：NEARBY_DEVICES 不是标准权限常量，用 BLUETOOTH_SCAN + BLUETOOTH_CONNECT 覆盖 -->
 
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
 
