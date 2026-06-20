@@ -22,7 +22,7 @@ internal object HidSpec {
         0x05, 0x01,            // Usage Page (Generic Desktop)
         0x09, 0x06,            // Usage (Keyboard)
         0xA1.toByte(), 0x01,   // Collection (Application)
-        0x85, 0x01,            //   Report ID (1)
+        0x85.toByte(), 0x01,   //   Report ID (1)
         0x05, 0x07,            //   Usage Page (Keyboard/Keypad)
         0x19, 0xE0.toByte(),   //   Usage Minimum (Left Control)
         0x29, 0xE7.toByte(),   //   Usage Maximum (Right GUI)
